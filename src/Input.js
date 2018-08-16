@@ -8,11 +8,11 @@ class Input extends Component{
         this.state={
             url: '',
             name: '',
-            price:'',
-            simulation: [],
+            price: 0,
+            products: [],
             // dummy:[1,2,3,4]
         }
-        this.handleDelete = this.handleDelete.bind(this)
+        // this.handleDelete = this.handleDelete.bind(this)
     }
     componentDidMount(){
         this.getServer()
@@ -20,22 +20,25 @@ class Input extends Component{
 
     getServer(){
         axios
-        .get('/api/simulation')
-        .then(responce=>{
-        console.log(responce)
-        this.setState({simulation: responce.data})
+        .get('/api/products').then( response => {
+        // console.log(response)
+            this.setState({products: response.data})
         })
     }
 
     createPost(){
+        const name = this.state.name
+        const price = this.state.price
+        const image_url = this.state.url
         axios
-        .post('/api/simulation',
+        .post('/api/simulation/post',
         {
-        name: this.state.name,
-        price: this.state.price,
-        url:this.state.url})
-        .then(res=>{
-            this.setState({siumlation:res.data})
+        name,
+        price,
+        image_url
+        })
+        .then( res=>{
+            this.getServer();
         })
     }
     // handleCancel(e){
@@ -54,28 +57,35 @@ class Input extends Component{
     // handleEdit(){
     //     axios.put()
     // }
-    handleDelete(obj){
-        axios.delete(`/api/simulation/{obj}`)
+
+    handleDelete(id){
+        axios.delete(`/api/delete/${id}`)
         .then(res=>{
-            this.setState({simulation: res.data})
+            console.log(res)
+            this.getServer();
         })
     }
-    handleCancel(e){
-        this.setState({name: '', price:''})
-    }
+    // handleCancel(e){
+    //     this.setState({name: '', price:''})
+    // }
 
     render(){
-        let display = this.state.simulation.map((ele,index)=>{
+        console.log(this.state)
+        let display = this.state.products.map((ele,index)=>{
+            console.log(ele.product_id)
             return <div key={index} className="display">
                 <div className="displayName"><p>{ele.name}</p></div>  
                 <div className="displayPrice"><p>{ele.price}</p></div>
-                <button className="deleteButton"onClick={()=>{this.handleDelete(index)}}>Delete</button>
+                <img src={ele.image_url} width='100px' height='100px' />
+                <button className="deleteButton"onClick={()=>{this.handleDelete(ele.product_id)}}>Delete</button>
                 <button className="editButton">Edit</button>
+
+
                 {/* <button onClick={()=>{handleEdit()}}>Edit</button> */}
                 {/* <div className="displayUrl"><p>{ele.url}</p></div> */}
             </div>
         })
-        console.log(this.state.simulation)
+        // console.log(this.state.simulation)
         return(
             <div>
             <input className="urlInput" onChange={(e)=>this.handleUrl(e)}/>

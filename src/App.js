@@ -18,6 +18,10 @@ class App extends Component {
         <Input/>        
         </div>
 
+        <div>
+          {/* <Display/> */}
+        </div>
+
 
       </div>
     );
